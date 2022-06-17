@@ -8,37 +8,62 @@
 import SwiftUI
 
 struct EggTimerButton: View {
-    @Binding var timeLeft: Int
-    @Binding var timer:Timer?
-    @Binding var displayTimer: Bool
     var eggTime: EggTime
+    var timerFnction: (Int)->()
+    var selectNameFunction:(String)->()
+    var editing: Bool
 
     var body: some View {
 
-        Button(eggTime.id + ": \(eggTime.timer)"){
-            if (!displayTimer){
-                timeLeft = timeLeft == 0 ? eggTime.timer*60 : timeLeft
-                displayTimer = true
-                timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: {_ in
-                    timeLeft -= 1
-                    if timeLeft <= 0 {
-                        timer?.invalidate()
-                        displayTimer = false
-                        timeLeft = 0
-                    }
-                })
+        Button(){
+            editing ? selectNameFunction(eggTime.id) : timerFnction(eggTime.timer*60)
+        } label:{
+
+            ZStack {
+
+                ZStack {
+                    Image("Egg")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .padding(/*@START_MENU_TOKEN@*/.all/*@END_MENU_TOKEN@*/)
+                    Circle().frame(width: 40, height: 50, alignment: .center).foregroundColor(eggTime.color).opacity(0.4)
+                }.frame(width: 100, height: 120)
+
+                VStack() {
+                    Spacer().frame( height: 70)
+                    Text(eggTime.id + ": \(eggTime.timer)")
+                        .font(.callout)
+                        .fontWeight(/*@START_MENU_TOKEN@*/.bold/*@END_MENU_TOKEN@*/)
+                        .foregroundColor(Color.white)
+                        .shadow(radius: /*@START_MENU_TOKEN@*/7/*@END_MENU_TOKEN@*/)
+                        .blendMode(/*@START_MENU_TOKEN@*/.screen/*@END_MENU_TOKEN@*/)
+                    .frame(alignment: .bottom)
+                }
+
+
+
+
             }
+
+
         }.padding()
+            .contentShape(Rectangle())
+            .buttonStyle(.borderedProminent )
+            .background(editing ? .red : .clear)
     }
 }
 
 struct EggButton_Previews: PreviewProvider {
-    @State static var timeLeft = 0
-    @State static var timer:Timer? = Timer()
-    @State static var displayTimer = true
-    static var eggTime = EggTime(id: "Hard", timer: 10)
+    static var vm = MainViewModel()
+    static var eggTime = EggTime.example
 
     static var previews: some View {
-        EggTimerButton(timeLeft: $timeLeft, timer: $timer, displayTimer: $displayTimer, eggTime: eggTime)
+
+        HStack(spacing:0) {
+            EggTimerButton(eggTime: eggTime, timerFnction: vm.startTimer, selectNameFunction: vm.selectedName, editing: false)
+            
+        }
     }
 }
+
+
