@@ -48,5 +48,7 @@ class MainViewModel: ObservableObject {
         }
         selectedName(name: "")
     }
+
+    
     
 }
